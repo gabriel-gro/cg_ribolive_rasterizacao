@@ -316,9 +316,9 @@ void BigPixelCanvas::DesenharTriangulo2DAll(const Triang2D& triangulo, wxDC& dc)
         aLongaFim_Y = auxY;
     }
 
-    cout << "Aresta longa Inicio_: " << aLongaInicio_X << " " << aLongaInicio_Y << endl;
-    cout << "Aresta longa Fim_: " << aLongaFim_X << " " << aLongaFim_Y << endl;
-    cout << "Aresta sobra   : " << ponto_X << " " << ponto_Y << endl;
+    // cout << "Aresta longa Inicio_: " << aLongaInicio_X << " " << aLongaInicio_Y << endl;
+    // cout << "Aresta longa Fim_: " << aLongaFim_X << " " << aLongaFim_Y << endl;
+    // cout << "Aresta sobra   : " << ponto_X << " " << ponto_Y << endl;
     
     int yMin = aLongaInicio_Y;
     int yMax = ponto_Y;
