@@ -6,7 +6,7 @@ DrawModeDialog::DrawModeDialog(const wxString& prompt)
 {
     wxBoxSizer* topSizer = new wxBoxSizer(wxVERTICAL);
     wxString opcoes[] = { wxT("Linhas"), wxT("Círculos"), wxT("Circulo Preenchido"), wxT("Elipses"),
-                          wxT("Triângulos"), wxT("Comandos do arquivo")};
+                          wxT("Triângulos"), wxT("Triângulos preenchidos"), wxT("Comandos do arquivo")};
     mRadio = new wxRadioBox(this, wxID_ANY, wxT("Tipo de desenho"), wxDefaultPosition,
                             wxDefaultSize, wxArrayString(WXSIZEOF(opcoes), opcoes), 0,
                             wxRA_SPECIFY_ROWS);

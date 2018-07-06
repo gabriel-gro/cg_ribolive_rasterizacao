@@ -14,6 +14,7 @@ typedef enum {
     CIRCLES_P,
     ELIPSES,
     TRIANGLES,
+    TRIANGLES_P,
     COMANDOS
 } DrawMode;
 
@@ -210,6 +211,9 @@ void MyFrame::OnOption(wxCommandEvent& event) {
                 case TRIANGLES:
                     feedback = wxT("Clique em três pontos para desenhar um triângulo.");
                     break;
+                case TRIANGLES_P:
+                    feedback = wxT("Clique em três pontos para desenhar um triângulo.");
+                    break;
                 default:
                     break;
             }
@@ -280,6 +284,22 @@ void MyFrame::OnClick(wxMouseEvent &event) {
                         BigPixelCanvas::Ponto(p2.x, p2.y, 0),
                         BigPixelCanvas::Ponto(logicalPos.x, logicalPos.y, 0));
                     mCanvasPtr->DesenharTriangulo2D(triangulo);
+                    mContadorCliques = 0;
+                }
+            }
+            break;
+        case TRIANGLES_P:
+            if (mContadorCliques == 1)
+                p1 = logicalPos;
+            else {
+                if (mContadorCliques == 2)
+                    p2 = logicalPos;
+                else {
+                    BigPixelCanvas::Triang2D triangulo(
+                        BigPixelCanvas::Ponto(p1.x, p1.y, 0),
+                        BigPixelCanvas::Ponto(p2.x, p2.y, 0),
+                        BigPixelCanvas::Ponto(logicalPos.x, logicalPos.y, 0));
+                    mCanvasPtr->DesenharTriangulo2DAll(triangulo);
                     mContadorCliques = 0;
                 }
             }

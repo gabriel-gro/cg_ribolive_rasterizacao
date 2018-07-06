@@ -243,6 +243,7 @@ void BigPixelCanvas::DrawCircleAll(const wxPoint& center, int radius, wxDC& dc){
     
 }
 
+
 void BigPixelCanvas::DesenharTriangulo2D(const Triang2D& triangulo) {
     wxClientDC dc(this);
     PrepareDC(dc);
@@ -250,11 +251,138 @@ void BigPixelCanvas::DesenharTriangulo2D(const Triang2D& triangulo) {
 }
 
 void BigPixelCanvas::DesenharTriangulo2D(const Triang2D& triangulo, wxDC& dc) {
-    Interv2D intervalo;
-    while (triangulo.AtualizarIntervaloHorizontal(&intervalo))
-        if (intervalo.Valido())
-            DesenharIntervaloHorizontal(intervalo, dc);
+
+    Ponto p1 = triangulo.P1();
+    Ponto p2 = triangulo.P2();
+    Ponto p3 = triangulo.P3();
+    
+    DrawLine(wxPoint(p1.mX, p1.mY), wxPoint(p2.mX, p2.mY), dc);     // P1 -> P2
+    DrawLine(wxPoint(p2.mX, p2.mY), wxPoint(p3.mX, p3.mY), dc);     // P2 -> P3
+    DrawLine(wxPoint(p3.mX, p3.mY), wxPoint(p1.mX, p1.mY), dc);     // P3 -> P1
+}   
+
+
+
+void BigPixelCanvas::DesenharTriangulo2DAll(const Triang2D& triangulo) {
+    wxClientDC dc(this);
+    PrepareDC(dc);
+    DesenharTriangulo2DAll(triangulo, dc);
 }
+
+void BigPixelCanvas::DesenharTriangulo2DAll(const Triang2D& triangulo, wxDC& dc) {
+    Ponto p1 = triangulo.P1();
+    Ponto p2 = triangulo.P2();
+    Ponto p3 = triangulo.P3();
+    
+    // variacao de Y de todos vetores (entre dois pontos)
+    int vY12 = p2.mY - p1.mY;
+    int vY23 = p3.mY - p2.mY;
+    int vY13 = p3.mY - p1.mY;
+    // mudulo da variação para testar qual é a maior
+    // vY12 = (vY12 > 0)? vY12 : -vY12;
+    // vY23 = (vY23 > 0)? vY23 : -vY23;
+    // vY13 = (vY13 > 0)? vY13 : -vY13;
+
+    int aLongaInicio_X, aLongaInicio_Y, aLongaFim_X, aLongaFim_Y, ponto_X, ponto_Y;
+    if((abs(vY12) > abs(vY23)) and (abs(vY12) > abs(vY13))){
+        aLongaInicio_X = p1.mX;
+        aLongaInicio_Y = p1.mY;
+        aLongaFim_X = p2.mX;
+        aLongaFim_Y = p2.mY;
+        ponto_X = p3.mX;
+        ponto_Y = p3.mY;
+    } else if((abs(vY13) > abs(vY23)) and (abs(vY13) > abs(vY12))){
+        aLongaInicio_X = p1.mX;
+        aLongaInicio_Y = p1.mY;
+        aLongaFim_X = p3.mX;
+        aLongaFim_Y = p3.mY;
+        ponto_X = p2.mX;
+        ponto_Y = p2.mY;
+    } else {
+        aLongaInicio_X = p2.mX;
+        aLongaInicio_Y = p2.mY;
+        aLongaFim_X = p3.mX;
+        aLongaFim_Y = p3.mY;
+        ponto_X = p1.mX;
+        ponto_Y = p1.mY;
+    }
+
+    if(aLongaInicio_Y > aLongaFim_Y){
+        int auxX = aLongaInicio_X;
+        int auxY = aLongaInicio_Y;
+        aLongaInicio_X = aLongaFim_X;
+        aLongaInicio_Y = aLongaFim_Y;
+        aLongaFim_X = auxX;
+        aLongaFim_Y = auxY;
+    }
+
+    cout << "Aresta longa Inicio_: " << aLongaInicio_X << " " << aLongaInicio_Y << endl;
+    cout << "Aresta longa Fim_: " << aLongaFim_X << " " << aLongaFim_Y << endl;
+    cout << "Aresta sobra   : " << ponto_X << " " << ponto_Y << endl;
+    
+    int yMin = aLongaInicio_Y;
+    int yMax = ponto_Y;
+
+    float xEsq = aLongaInicio_X;
+    float xDir = aLongaInicio_X;
+
+    // incremento da aresta longa, inc_a2 é o incremento que vai da aresta longa ate ponto
+    // inc_a3 é o incremento do ponto ate o fim da aresta longa
+    // pode chamar inc de derivação (onde teremos o coeficiente de variação)
+    if(abs(aLongaFim_Y - aLongaInicio_Y) > 0 ){
+        cout << "entrou" << endl;
+        float inc_aLonga = ((float) (aLongaFim_X - aLongaInicio_X)) / (aLongaFim_Y - aLongaInicio_Y);
+        float inc_a2 =     ((float) (ponto_X - aLongaInicio_X))     / (ponto_Y - aLongaInicio_Y);
+        float inc_a3 =     ((float) (aLongaFim_X - ponto_X))        / (aLongaFim_Y - ponto_Y);
+
+        float limiteTrianguloInf = inc_aLonga * (yMax - yMin) + aLongaInicio_X;
+
+        // Ponto a ESQUERDA da aresta longa
+        float incEsq = inc_a2;
+        float incDir = inc_aLonga;
+        bool pontoEstaDireita = limiteTrianguloInf < (float)(ponto_X);
+
+        // para no caso de ponto estar a DIREITA da aresta longa
+        if(pontoEstaDireita){
+            incEsq = inc_aLonga;
+            incDir = inc_a2;
+        }
+
+        int y = yMin;
+
+        while(y < yMax){
+            for(int x = xEsq; x < xDir; ++x){
+                DrawPixel(x, y, dc);
+            }
+            xEsq += incEsq;
+            xDir += incDir;
+
+            ++y;
+        }
+
+        yMin = yMax;
+        yMax = aLongaFim_Y;
+
+        // Ponto a ESQUERDA da aresta longa
+        incEsq = inc_a3;
+        incDir = inc_aLonga;
+        // para no caso de ponto estar a DIREITA da aresta longa
+        if(pontoEstaDireita){
+            incDir = inc_a3;
+            incEsq = inc_aLonga;
+        }
+
+        y = yMin;
+        while(y < yMax){
+            for(int x = xEsq; x < xDir; ++x){
+                DrawPixel(x, y, dc);
+            }
+            xEsq += incEsq;
+            xDir += incDir;
+            ++y;
+        }
+    }
+}   
 
 void BigPixelCanvas::DesenharTriangulo3D(const Triang3D& triangulo, wxDC& dc)
 {

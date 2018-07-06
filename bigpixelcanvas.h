@@ -35,6 +35,8 @@ class BigPixelCanvas: public wxPanel
         // Draw triangle using window coordinates.
         void DrawCircleAll(wxPoint center, int radius);
         // Draw triangle using window coordinates.
+        void DesenharTriangulo2DAll(const Triang2D& t);
+        // Draw triangle using window coordinates.
         void DesenharTriangulo2D(const Triang2D& t);
         void DesenharTriangulo3D(const Triang3D& triangulo, wxDC& dc);
         // Interpreta comandos de desenho do arquivo comandos.txt.
@@ -53,6 +55,8 @@ class BigPixelCanvas: public wxPanel
         void DrawCircle(const wxPoint& center, int radius, wxDC& dc);
         // Draw triangle in local (big pixel) coordinates.
         void DrawCircleAll(const wxPoint& center, int radius, wxDC& dc);
+        // Draw triangle in local (big pixel) coordinates.
+        void DesenharTriangulo2DAll(const Triang2D& triangulo, wxDC& dc);
         // Draw triangle in local (big pixel) coordinates.
         void DesenharTriangulo2D(const Triang2D& triangulo, wxDC& dc);
         void PrepareDC(wxDC& dc);
